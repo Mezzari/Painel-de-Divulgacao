@@ -25,7 +25,7 @@ public class SistemaDivulga {
         executor.execute(new Runnable(){
             public void run() {
                 Painel p = new Painel();
-                Endpoint.publish("http://0.0.0.0:9876/webservice", p);
+                Endpoint.publish("http://192.168.1.112:9876/webservice", p);
             }
         });
     }

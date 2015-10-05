@@ -243,14 +243,13 @@ public class Painel implements server {
     @Override
     public void ImprimeRegistros() { //Imprime o Ticket de Atendimento para Registros
         this.detectaImpressoras("Generic / Text Only");
-        DocPrintJob dpj = impressora.createPrintJob();
-        this.centraliza(dpj);
-        this.imprime(dpj, "CARTORIO MEZZARI\n");
-        this.imprime(dpj, "Primeiro Cartorio de\n");
-        this.imprime(dpj, "Imoveis de Pelotas\n");
-        this.imprime(dpj, LocalDateTime.now().toString()+"\n\n\n");
-        this.imprimeReg(dpj, Integer.toString(reg+1)+"\n\n\n");
-        this.acionarGuilhotina(dpj);
+        this.centraliza();
+        this.imprime("CARTORIO MEZZARI\n"+
+                "Primeiro Cartorio de\n"+
+                "Imoveis de Pelotas\n"+
+                LocalDateTime.now().toString()+
+                "\n\n\n");
+        this.imprimeReg(Integer.toString(reg+1));
         reg++;
         d.addReg(d.getId(), reg);
 //        d.geraAtendimento(2); //Gera horario de atendimento no DB
@@ -259,14 +258,13 @@ public class Painel implements server {
     @Override
     public void ImprimePreferencial() { //Imprime o Ticket de Atendimento para Certidoes Preferencial
         this.detectaImpressoras("Generic / Text Only");
-        DocPrintJob dpj = impressora.createPrintJob();
-        this.centraliza(dpj);
-        this.imprime(dpj, "CARTORIO MEZZARI\n");
-        this.imprime(dpj, "Primeiro Cartorio de\n");
-        this.imprime(dpj, "Imoveis de Pelotas\n");
-        this.imprime(dpj, LocalDateTime.now().toString()+"\n\n\n");
-        this.imprimeCertPref(dpj, Integer.toString(cert_pref+1)+"\n\n\n");
-        this.acionarGuilhotina(dpj);
+        this.centraliza();
+        this.imprime("CARTORIO MEZZARI\n"+
+                "Primeiro Cartorio de\n"+
+                "Imoveis de Pelotas\n"+
+                LocalDateTime.now().toString()+
+                "\n\n\n");
+        this.imprimeCertPref(Integer.toString(cert_pref+1));
         cert_pref++;
         d.addPref(d.getId(), cert_pref);
 //        d.geraAtendimento(0); //Gera horario de atendimento no DB
@@ -275,14 +273,13 @@ public class Painel implements server {
     @Override
     public void ImprimeCertidoes() { //Imprime o Ticket de Atendimento para Certidoes
         this.detectaImpressoras("Generic / Text Only");
-        DocPrintJob dpj = impressora.createPrintJob();
-        this.centraliza(dpj);        
-        this.imprime(dpj, "CARTORIO MEZZARI\n");
-        this.imprime(dpj, "Primeiro Cartorio de\n");
-        this.imprime(dpj, "Imoveis de Pelotas\n");
-        this.imprime(dpj, LocalDateTime.now().toString()+"\n\n\n");
-        this.imprimeCert(dpj, Integer.toString(cert+1)+"\n\n\n");
-        this.acionarGuilhotina(dpj);
+        this.centraliza();
+        this.imprime("CARTORIO MEZZARI\n"+
+                "Primeiro Cartorio de\n"+
+                "Imoveis de Pelotas\n"+
+                LocalDateTime.now().toString()+
+                "\n\n\n");
+        this.imprimeCert(Integer.toString(cert+1));
         cert++;
         d.addCert(d.getId(), cert);
 //        d.geraAtendimento(1); //Gera horario de atendimento no DB
@@ -503,7 +500,8 @@ public class Painel implements server {
             }    
             return listaImpressoras;  
         } catch (Exception e) {    
-            e.printStackTrace();    
+            e.printStackTrace();   
+            JOptionPane.showMessageDialog(null, e.getMessage());
         }    
         return null;  
     }  
@@ -519,14 +517,16 @@ public class Painel implements server {
             }    
         } catch (Exception e) {    
             e.printStackTrace();    
+            JOptionPane.showMessageDialog(null, e.getMessage());
         }    
     }  
       
-    public  boolean imprime(DocPrintJob dpj, String texto) {    
+    public  boolean imprime(String texto) {    
         if (impressora == null) {    
             JOptionPane.showMessageDialog(null, "Nennhuma impressora foi encontrada. Instale uma impressora padrão \r\n(Generic Text Only) e reinicie o programa.");   
         } else {    
             try {    
+                DocPrintJob dpj = impressora.createPrintJob();    
                 InputStream stream = new ByteArrayInputStream((texto).getBytes());    
                 DocFlavor flavor = DocFlavor.INPUT_STREAM.AUTOSENSE;    
                 Doc doc = new SimpleDoc(stream, flavor, null);
@@ -540,58 +540,64 @@ public class Painel implements server {
         return false;    
     }   
   
-    public void acionarGuilhotina(DocPrintJob dpj){  
-        imprime(dpj, ""+(char)27+(char)109);  
+    public void acionarGuilhotina(){  
+        imprime(""+(char)27+(char)109);  
     }
     
-    public void centraliza(DocPrintJob dpj){
-        imprime(dpj, ""+(char)27+(char)97+(char)1);
+    public void centraliza(){
+        imprime(""+(char)27+(char)97+(char)1);
     }
     
-    public void imprimeCert(DocPrintJob dpj, String senha){
-        imprime(dpj, ""+(char)27+(char)33+(char)56);
-        imprime(dpj, ""+(char)27+(char)100+(char)1);
-        imprime(dpj, "CERTIDOES\n\n");
-        imprime(dpj, ""+(char)27+(char)100+(char)0);
-        imprime(dpj, ""+(char)27+(char)33+(char)1); 
-        imprime(dpj, "SENHA:\n\n");
-        imprime(dpj, ""+(char)27+(char)33+(char)56);
-        imprime(dpj, ""+(char)27+(char)100+(char)1);
-        imprimeNegrito(dpj, senha+"\n\n\n\n");
-        imprime(dpj, ""+(char)27+(char)100+(char)0);
-        imprime(dpj, ""+(char)27+(char)33+(char)1);
+    public void imprimeCert(String senha){
+        imprime(""+(char)27+(char)33+(char)56+
+                ""+(char)27+(char)100+(char)1+
+                "CERTIDOES\n\n"+
+                ""+(char)27+(char)100+(char)0+
+                ""+(char)27+(char)33+(char)1+
+                "SENHA:\n\n"+
+                ""+(char)27+(char)33+(char)56+
+                ""+(char)27+(char)100+(char)1+
+                ""+(char)27+(char)69 + senha+"\n\n\n\n" +(char)27+(char)70+
+                ""+(char)27+(char)100+(char)0+
+                ""+(char)27+(char)33+(char)1+
+                "\n\n\n"+
+                ""+(char)27+(char)109);
     }
     
-    public void imprimeCertPref(DocPrintJob dpj, String senha){
-        imprime(dpj, ""+(char)27+(char)33+(char)56);
-        imprime(dpj, ""+(char)27+(char)100+(char)1);
-        imprime(dpj, "CERTIDOES PREFERENCIAL\n\n");
-        imprime(dpj, ""+(char)27+(char)100+(char)0);
-        imprime(dpj, ""+(char)27+(char)33+(char)1); 
-        imprime(dpj, "SENHA:\n\n");
-        imprime(dpj, ""+(char)27+(char)33+(char)56);
-        imprime(dpj, ""+(char)27+(char)100+(char)1);
-        imprimeNegrito(dpj, senha+"\n\n\n\n");
-        imprime(dpj, ""+(char)27+(char)100+(char)0);
-        imprime(dpj, ""+(char)27+(char)33+(char)1);
+    public void imprimeCertPref(String senha){
+        imprime(""+(char)27+(char)33+(char)56+
+                ""+(char)27+(char)100+(char)1+
+                "CERTIDOES PREFERENCIAL\n\n"+
+                ""+(char)27+(char)100+(char)0+
+                ""+(char)27+(char)33+(char)1+
+                "SENHA:\n\n"+
+                ""+(char)27+(char)33+(char)56+
+                ""+(char)27+(char)100+(char)1+
+                ""+(char)27+(char)69 + senha+"\n\n\n\n" +(char)27+(char)70+
+                ""+(char)27+(char)100+(char)0+
+                ""+(char)27+(char)33+(char)1+
+                "\n\n\n"+
+                ""+(char)27+(char)109);
     }
     
-    public void imprimeReg(DocPrintJob dpj, String senha){
-        imprime(dpj, ""+(char)27+(char)33+(char)56);
-        imprime(dpj, ""+(char)27+(char)100+(char)1);
-        imprime(dpj, "REGISTROS\n\n");
-        imprime(dpj, ""+(char)27+(char)100+(char)0);
-        imprime(dpj, ""+(char)27+(char)33+(char)1); 
-        imprime(dpj, "SENHA:\n\n");
-        imprime(dpj, ""+(char)27+(char)33+(char)56);
-        imprime(dpj, ""+(char)27+(char)100+(char)1);
-        imprimeNegrito(dpj, senha+"\n\n\n\n");
-        imprime(dpj, ""+(char)27+(char)100+(char)0);
-        imprime(dpj, ""+(char)27+(char)33+(char)1);
+    public void imprimeReg(String senha){
+        imprime(""+(char)27+(char)33+(char)56+
+                ""+(char)27+(char)100+(char)1+
+                "REGISTROS\n\n"+
+                ""+(char)27+(char)100+(char)0+
+                ""+(char)27+(char)33+(char)1+
+                "SENHA:\n\n"+
+                ""+(char)27+(char)33+(char)56+
+                ""+(char)27+(char)100+(char)1+
+                ""+(char)27+(char)69 + senha+"\n\n\n\n" +(char)27+(char)70+
+                ""+(char)27+(char)100+(char)0+
+                ""+(char)27+(char)33+(char)1+
+                "\n\n\n"+
+                ""+(char)27+(char)109);
     }
     
-    public void imprimeNegrito(DocPrintJob dpj, String texto){
-        imprime(dpj, ""+(char)27+(char)69 + texto +(char)27+(char)70);
+    public void imprimeNegrito(String texto){
+        imprime(""+(char)27+(char)69 + texto +(char)27+(char)70);
     }
         
     public void rodaAudio(String audio){
